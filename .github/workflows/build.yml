@@ -41,8 +41,11 @@ jobs:
           export CLANG_TRIPLE=aarch64-linux-gnu-
 
           rm -rf out
-          git clean -fdx
-          git reset --hard
+          rm -f .config
+          rm -rf include/generated/
+          rm -rf include/config/
+          rm -f scripts/basic/fixdep
+          rm -f scripts/kconfig/conf
 
           cat > arch/arm64/configs/droidspaces.config << 'EOF'
           CONFIG_NAMESPACES=y
