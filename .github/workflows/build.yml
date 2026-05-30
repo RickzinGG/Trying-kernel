@@ -89,7 +89,7 @@ jobs:
             CLANG_TRIPLE=$CLANG_TRIPLE \
             CROSS_COMPILE=$CROSS_COMPILE \
             CROSS_COMPILE_ARM32=$CROSS_COMPILE_ARM32 \
-            Image dtbs \
+            Image \
             2>&1 | tee ../build.log
 
       - name: Empacotar
@@ -123,10 +123,6 @@ jobs:
 
           find kernel/out/arch/arm64/boot/ \
             -name "Image*" -exec cp {} AnyKernel3/ \;
-
-          mkdir -p AnyKernel3/dtbs
-          find kernel/out/arch/arm64/boot/dts/ \
-            -name "*.dtb" -exec cp {} AnyKernel3/dtbs/ \;
 
           cd AnyKernel3
           zip -r9 ../kernel-xpeng-droidspaces.zip * -x '*.git*'
