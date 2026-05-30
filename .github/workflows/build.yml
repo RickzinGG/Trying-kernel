@@ -78,6 +78,10 @@ jobs:
             'CONFIG_VETH=y' \
             'CONFIG_BRIDGE=y' \
             'CONFIG_CGROUP_BPF=y' \
+            'CONFIG_QCOM_SMEM=y' \
+            'CONFIG_COMMON_CLK_QCOM=y' \
+            'CONFIG_QCOM_QTEE_SHMBRIDGE=y' \
+            'CONFIG_QCOM_SCM=y' \
             > arch/arm64/configs/droidspaces.config
 
           make O=out ARCH=arm64 CC=clang \
