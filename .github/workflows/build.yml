@@ -56,15 +56,6 @@ jobs:
           CONFIG_CGROUP_BPF=y
           EOF
 
-      - name: Listar defconfigs disponíveis
-        working-directory: kernel
-        run: |
-          echo "=== arch/arm64/configs/ ==="
-          ls arch/arm64/configs/
-          echo ""
-          echo "=== arch/arm64/configs/vendor/ (se existir) ==="
-          ls arch/arm64/configs/vendor/ 2>/dev/null || echo "pasta vendor não existe"
-
       - name: Compilar
         working-directory: kernel
         run: |
@@ -78,11 +69,7 @@ jobs:
           make O=out ARCH=arm64 CC=clang \
             CLANG_TRIPLE=$CLANG_TRIPLE \
             CROSS_COMPILE=$CROSS_COMPILE \
-            vendor/lahaina_QGKI_defconfig 2>&1 || \
-          make O=out ARCH=arm64 CC=clang \
-            CLANG_TRIPLE=$CLANG_TRIPLE \
-            CROSS_COMPILE=$CROSS_COMPILE \
-            lahaina_QGKI_defconfig
+            gki_defconfig
 
           ./scripts/kconfig/merge_config.sh \
             -m out/.config \
