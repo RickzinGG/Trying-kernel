@@ -30,9 +30,21 @@ jobs:
             https://github.com/ZyCromerZ/Clang \
             clang
 
-      - name: Criar config do Droidspaces
+      - name: Compilar
+        working-directory: kernel
         run: |
-          cat > kernel/arch/arm64/configs/droidspaces.config << 'EOF'
+          export PATH="${GITHUB_WORKSPACE}/clang/bin:$PATH"
+          export ARCH=arm64
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+          export CC=clang
+          export CLANG_TRIPLE=aarch64-linux-gnu-
+
+          rm -rf out
+          git clean -fdx
+          git reset --hard
+
+          cat > arch/arm64/configs/droidspaces.config << 'EOF'
           CONFIG_NAMESPACES=y
           CONFIG_UTS_NS=y
           CONFIG_IPC_NS=y
@@ -55,20 +67,6 @@ jobs:
           CONFIG_BRIDGE=y
           CONFIG_CGROUP_BPF=y
           EOF
-
-      - name: Compilar
-        working-directory: kernel
-        run: |
-          export PATH="${GITHUB_WORKSPACE}/clang/bin:$PATH"
-          export ARCH=arm64
-          export CROSS_COMPILE=aarch64-linux-gnu-
-          export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-          export CC=clang
-          export CLANG_TRIPLE=aarch64-linux-gnu-
-
-          rm -rf out
-          git clean -fdx
-          git reset --hard
 
           make O=out ARCH=arm64 CC=clang \
             CLANG_TRIPLE=$CLANG_TRIPLE \
