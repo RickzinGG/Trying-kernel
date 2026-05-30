@@ -76,8 +76,9 @@ jobs:
             CROSS_COMPILE=$CROSS_COMPILE \
             gki_defconfig
 
-          ./scripts/kconfig/merge_config.sh \
-            -m out/.config \
+          ./scripts/kconfig/merge_config.sh -m out/.config \
+            arch/arm64/configs/vendor/lahaina_GKI.config \
+            arch/arm64/configs/vendor/ext_configs/moto-lahaina-xpeng.config \
             arch/arm64/configs/droidspaces.config
           mv .config out/.config
           make O=out ARCH=arm64 olddefconfig
