@@ -30,6 +30,11 @@ jobs:
             https://github.com/ZyCromerZ/Clang \
             clang
 
+      - name: Verificar versão do kernel no fonte
+        working-directory: kernel
+        run: |
+          head -5 Makefile
+
       - name: Compilar
         working-directory: kernel
         run: |
