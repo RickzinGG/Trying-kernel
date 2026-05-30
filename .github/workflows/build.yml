@@ -66,6 +66,7 @@ jobs:
           export CC=clang
           export CLANG_TRIPLE=aarch64-linux-gnu-
 
+          rm -rf out
           make ARCH=arm64 mrproper
 
           make O=out ARCH=arm64 CC=clang \
