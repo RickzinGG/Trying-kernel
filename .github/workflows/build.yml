@@ -79,6 +79,7 @@ jobs:
           ./scripts/kconfig/merge_config.sh \
             -m out/.config \
             arch/arm64/configs/droidspaces.config
+          mv .config out/.config
           make O=out ARCH=arm64 olddefconfig
 
           make -j$(nproc) O=out ARCH=arm64 CC=clang \
