@@ -37,11 +37,13 @@ jobs:
             drivers/hwtracing/coresight/coresight-byte-cntr.c
           echo "✅ Patch coresight aplicado!"
 
-          sed -i 's/msm_spare_read(/\/\/msm_spare_read(/' \
-            drivers/mmc/host/sdhci-msm.c
-          sed -i 's/msm_spare_write(/\/\/msm_spare_write(/' \
-            drivers/mmc/host/sdhci-msm.c
-          echo "✅ Patch sdhci-msm aplicado!"
+      - name: Encontrar config do msm_spare
+        working-directory: kernel
+        run: |
+          echo "=== Makefile que controla msm_spare ==="
+          grep -r "msm_spare" drivers/ --include="Makefile" -l
+          echo "=== Config relacionado ==="
+          grep -r "msm_spare" drivers/ --include="Kconfig"
 
       - name: Compilar
         working-directory: kernel
@@ -88,7 +90,6 @@ jobs:
             'CONFIG_COMMON_CLK_QCOM=y' \
             'CONFIG_QCOM_QTEE_SHMBRIDGE=y' \
             'CONFIG_QCOM_SCM=y' \
-            'CONFIG_MSM_SPARE_REGISTERS=y' \
             > arch/arm64/configs/droidspaces.config
 
           make O=out ARCH=arm64 CC=clang \
