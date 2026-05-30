@@ -47,6 +47,8 @@ jobs:
           rm -f scripts/kconfig/conf
 
           printf '%s\n' \
+            'CONFIG_LOCALVERSION="-moto-gbcab31581c7e"' \
+            'CONFIG_LOCALVERSION_AUTO=n' \
             'CONFIG_NAMESPACES=y' \
             'CONFIG_UTS_NS=y' \
             'CONFIG_IPC_NS=y' \
