@@ -30,12 +30,18 @@ jobs:
             https://github.com/kdrag0n/proton-clang \
             clang
 
-      - name: Corrigir erro coresight
+      - name: Corrigir erros de compilação
         working-directory: kernel
         run: |
           sed -i 's/usb_qdss_alloc_req(ch, USB_BUF_NUM)/usb_qdss_alloc_req(ch, USB_BUF_NUM, 0)/' \
             drivers/hwtracing/coresight/coresight-byte-cntr.c
-          echo "✅ Patch aplicado!"
+          echo "✅ Patch coresight aplicado!"
+
+          sed -i 's/msm_spare_read(/\/\/msm_spare_read(/' \
+            drivers/mmc/host/sdhci-msm.c
+          sed -i 's/msm_spare_write(/\/\/msm_spare_write(/' \
+            drivers/mmc/host/sdhci-msm.c
+          echo "✅ Patch sdhci-msm aplicado!"
 
       - name: Compilar
         working-directory: kernel
