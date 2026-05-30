@@ -30,6 +30,13 @@ jobs:
             https://github.com/kdrag0n/proton-clang \
             clang
 
+      - name: Corrigir erro coresight
+        working-directory: kernel
+        run: |
+          sed -i 's/usb_qdss_alloc_req(ch, USB_BUF_NUM)/usb_qdss_alloc_req(ch, USB_BUF_NUM, 0)/' \
+            drivers/hwtracing/coresight/coresight-byte-cntr.c
+          echo "✅ Patch aplicado!"
+
       - name: Compilar
         working-directory: kernel
         run: |
@@ -71,7 +78,6 @@ jobs:
             'CONFIG_VETH=y' \
             'CONFIG_BRIDGE=y' \
             'CONFIG_CGROUP_BPF=y' \
-            'CONFIG_CORESIGHT_USB_BYTE_CNT_ENABLE=n' \
             > arch/arm64/configs/droidspaces.config
 
           make O=out ARCH=arm64 CC=clang \
