@@ -85,12 +85,16 @@ jobs:
           mv .config out/.config
           make O=out ARCH=arm64 olddefconfig
 
+          set -o pipefail
           make -j$(nproc) O=out ARCH=arm64 CC=clang \
             CLANG_TRIPLE=$CLANG_TRIPLE \
             CROSS_COMPILE=$CROSS_COMPILE \
             CROSS_COMPILE_ARM32=$CROSS_COMPILE_ARM32 \
             Image \
             2>&1 | tee ../build.log
+
+          echo "=== Últimas linhas do build ==="
+          tail -30 ../build.log
 
       - name: Empacotar
         run: |
