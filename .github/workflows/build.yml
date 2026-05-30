@@ -71,6 +71,7 @@ jobs:
             'CONFIG_VETH=y' \
             'CONFIG_BRIDGE=y' \
             'CONFIG_CGROUP_BPF=y' \
+            'CONFIG_CORESIGHT_USB_BYTE_CNT_ENABLE=n' \
             > arch/arm64/configs/droidspaces.config
 
           make O=out ARCH=arm64 CC=clang \
