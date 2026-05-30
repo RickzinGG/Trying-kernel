@@ -27,13 +27,8 @@ jobs:
       - name: Baixar Clang
         run: |
           git clone --depth=1 \
-            https://github.com/ZyCromerZ/Clang \
+            https://github.com/kdrag0n/proton-clang \
             clang
-
-      - name: Verificar versão do kernel no fonte
-        working-directory: kernel
-        run: |
-          head -5 Makefile
 
       - name: Compilar
         working-directory: kernel
@@ -84,7 +79,7 @@ jobs:
             gki_defconfig
 
           ./scripts/kconfig/merge_config.sh -m out/.config \
-            arch/arm64/configs/vendor/lahaina_GKI.config \
+            arch/arm64/configs/vendor/lahaina_QGKI.config \
             arch/arm64/configs/vendor/ext_config/moto-lahaina-xpeng.config \
             arch/arm64/configs/droidspaces.config
           mv .config out/.config
