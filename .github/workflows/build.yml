@@ -41,6 +41,7 @@ jobs:
           export CLANG_TRIPLE=aarch64-linux-gnu-
 
           rm -rf out
+          rm -f .config
           rm -rf include/generated/
           rm -rf include/config/
           rm -f scripts/basic/fixdep
@@ -72,10 +73,14 @@ jobs:
             'CONFIG_CGROUP_BPF=y' \
             > arch/arm64/configs/droidspaces.config
 
-          mkdir -p out
-          cp .config out/.config
+          make O=out ARCH=arm64 CC=clang \
+            CLANG_TRIPLE=$CLANG_TRIPLE \
+            CROSS_COMPILE=$CROSS_COMPILE \
+            gki_defconfig
 
           ./scripts/kconfig/merge_config.sh -m out/.config \
+            arch/arm64/configs/vendor/lahaina_GKI.config \
+            arch/arm64/configs/vendor/ext_config/moto-lahaina-xpeng.config \
             arch/arm64/configs/droidspaces.config
           mv .config out/.config
           make O=out ARCH=arm64 olddefconfig
