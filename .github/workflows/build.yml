@@ -92,6 +92,9 @@ jobs:
         run: |
           git clone --depth=1 \
             https://github.com/osm0sis/AnyKernel3 AnyKernel3
+
+          sed -i 's/do.devicecheck=1/do.devicecheck=0/' AnyKernel3/anykernel.sh
+
           find kernel/out/arch/arm64/boot/ \
             -name "Image*" -exec cp {} AnyKernel3/ \;
           cd AnyKernel3
