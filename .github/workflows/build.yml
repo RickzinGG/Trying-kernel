@@ -1,0 +1,113 @@
+name: Build Kernel xpeng - Droidspaces
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Baixar kernel da Motorola (tag S3RXC32.33-8-25)
+        run: |
+          git clone --depth=1 \
+            --branch S3RXC32.33-8-25 \
+            https://github.com/MotorolaMobilityLLC/kernel-msm \
+            kernel
+          echo "✅ Kernel baixado!"
+
+      - name: Dependências
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc bison build-essential flex \
+            libelf-dev libncurses5-dev libssl-dev python3 \
+            python-is-python3 zip gcc-aarch64-linux-gnu \
+            gcc-arm-linux-gnueabi
+
+      - name: Baixar Clang
+        run: |
+          git clone --depth=1 \
+            https://github.com/ZyCromerZ/Clang \
+            clang
+
+      - name: Criar config do Droidspaces
+        run: |
+          cat > kernel/arch/arm64/configs/droidspaces.config << 'EOF'
+          CONFIG_NAMESPACES=y
+          CONFIG_UTS_NS=y
+          CONFIG_IPC_NS=y
+          CONFIG_PID_NS=y
+          CONFIG_NET_NS=y
+          CONFIG_USER_NS=y
+          CONFIG_CGROUPS=y
+          CONFIG_CGROUP_FREEZER=y
+          CONFIG_CGROUP_DEVICE=y
+          CONFIG_CGROUP_CPUACCT=y
+          CONFIG_CGROUP_SCHED=y
+          CONFIG_CGROUP_PIDS=y
+          CONFIG_CPUSETS=y
+          CONFIG_MEMCG=y
+          CONFIG_BLK_CGROUP=y
+          CONFIG_SECCOMP=y
+          CONFIG_SECCOMP_FILTER=y
+          CONFIG_OVERLAY_FS=y
+          CONFIG_VETH=y
+          CONFIG_BRIDGE=y
+          CONFIG_CGROUP_BPF=y
+          EOF
+
+      - name: Compilar
+        working-directory: kernel
+        run: |
+          export PATH="${GITHUB_WORKSPACE}/clang/bin:$PATH"
+          export ARCH=arm64
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+          export CC=clang
+          export CLANG_TRIPLE=aarch64-linux-gnu-
+
+          # Descobrir o defconfig correto
+          echo "Defconfigs disponíveis:"
+          ls arch/arm64/configs/vendor/ | grep -i "lahaina\|xpeng\|QGKI" || \
+          ls arch/arm64/configs/ | grep -i "lahaina\|xpeng\|QGKI"
+
+          # Tentar compilar com o defconfig do lahaina
+          make O=out ARCH=arm64 CC=clang \
+            CLANG_TRIPLE=$CLANG_TRIPLE \
+            CROSS_COMPILE=$CROSS_COMPILE \
+            vendor/lahaina_QGKI_defconfig 2>&1 || \
+          make O=out ARCH=arm64 CC=clang \
+            CLANG_TRIPLE=$CLANG_TRIPLE \
+            CROSS_COMPILE=$CROSS_COMPILE \
+            lahaina_QGKI_defconfig
+
+          # Mesclar config do Droidspaces
+          ./scripts/kconfig/merge_config.sh \
+            -m out/.config \
+            arch/arm64/configs/droidspaces.config
+          make O=out ARCH=arm64 olddefconfig
+
+          # Compilar
+          make -j$(nproc) O=out ARCH=arm64 CC=clang \
+            CLANG_TRIPLE=$CLANG_TRIPLE \
+            CROSS_COMPILE=$CROSS_COMPILE \
+            CROSS_COMPILE_ARM32=$CROSS_COMPILE_ARM32 \
+            2>&1 | tee ../build.log
+
+      - name: Empacotar
+        run: |
+          git clone --depth=1 \
+            https://github.com/osm0sis/AnyKernel3 AnyKernel3
+          find kernel/out/arch/arm64/boot/ \
+            -name "Image*" -exec cp {} AnyKernel3/ \;
+          cd AnyKernel3
+          zip -r9 ../kernel-xpeng-droidspaces.zip * -x '*.git*'
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: kernel-xpeng-droidspaces
+          path: |
+            kernel-xpeng-droidspaces.zip
+            build.log
+          retention-days: 7
