@@ -40,11 +40,12 @@ jobs:
       - name: Encontrar config do msm_spare
         working-directory: kernel
         run: |
-          echo "=== Arquivo que define msm_spare_read ==="
-          grep -r "msm_spare_read" drivers/ --include="*.c" -l || echo "não encontrado em drivers/"
-          grep -r "msm_spare_read" drivers/ --include="*.h" -l || echo "não encontrado em headers"
-          echo "=== Buscando em todo o fonte ==="
-          grep -r "int msm_spare_read" . --include="*.c" || echo "definição não encontrada"
+          echo "=== Header msm_spare ==="
+          find . -name "*.h" | xargs grep -l "msm_spare_read" 2>/dev/null || echo "não encontrado"
+          echo "=== Todos arquivos .c com msm_spare ==="
+          find . -name "*.c" | xargs grep -l "msm_spare_read" 2>/dev/null || echo "não encontrado"
+          echo "=== Conteúdo do header se existir ==="
+          find . -name "*.h" | xargs grep -A5 "msm_spare_read" 2>/dev/null || echo "nada"
 
       - name: Compilar
         working-directory: kernel
@@ -135,27 +136,3 @@ jobs:
             '' \
             'block=/dev/block/bootdevice/by-name/boot' \
             'is_slot_device=1' \
-            'ramdisk_compression=auto' \
-            'patch_vbmeta_flag=auto' \
-            '' \
-            '. tools/ak3-core.sh' \
-            '' \
-            'dump_boot' \
-            '' \
-            'write_boot' \
-            > AnyKernel3/anykernel.sh
-
-          find kernel/out/arch/arm64/boot/ \
-            -name "Image*" -exec cp {} AnyKernel3/ \;
-
-          cd AnyKernel3
-          zip -r9 ../kernel-xpeng-droidspaces.zip * -x '*.git*'
-
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: kernel-xpeng-droidspaces
-          path: |
-            kernel-xpeng-droidspaces.zip
-            build.log
-          retention-days: 7
