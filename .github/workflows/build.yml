@@ -82,6 +82,7 @@ jobs:
             'CONFIG_COMMON_CLK_QCOM=y' \
             'CONFIG_QCOM_QTEE_SHMBRIDGE=y' \
             'CONFIG_QCOM_SCM=y' \
+            'CONFIG_MSM_SPARE_REGISTERS=y' \
             > arch/arm64/configs/droidspaces.config
 
           make O=out ARCH=arm64 CC=clang \
