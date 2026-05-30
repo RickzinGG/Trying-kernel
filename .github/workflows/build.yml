@@ -41,7 +41,6 @@ jobs:
           export CLANG_TRIPLE=aarch64-linux-gnu-
 
           rm -rf out
-          rm -f .config
           rm -rf include/generated/
           rm -rf include/config/
           rm -f scripts/basic/fixdep
@@ -71,14 +70,10 @@ jobs:
             'CONFIG_CGROUP_BPF=y' \
             > arch/arm64/configs/droidspaces.config
 
-          make O=out ARCH=arm64 CC=clang \
-            CLANG_TRIPLE=$CLANG_TRIPLE \
-            CROSS_COMPILE=$CROSS_COMPILE \
-            gki_defconfig
+          mkdir -p out
+          cp .config out/.config
 
           ./scripts/kconfig/merge_config.sh -m out/.config \
-            arch/arm64/configs/vendor/lahaina_GKI.config \
-            arch/arm64/configs/vendor/ext_config/moto-lahaina-xpeng.config \
             arch/arm64/configs/droidspaces.config
           mv .config out/.config
           make O=out ARCH=arm64 olddefconfig
@@ -87,6 +82,7 @@ jobs:
             CLANG_TRIPLE=$CLANG_TRIPLE \
             CROSS_COMPILE=$CROSS_COMPILE \
             CROSS_COMPILE_ARM32=$CROSS_COMPILE_ARM32 \
+            Image dtbs \
             2>&1 | tee ../build.log
 
       - name: Empacotar
@@ -120,6 +116,11 @@ jobs:
 
           find kernel/out/arch/arm64/boot/ \
             -name "Image*" -exec cp {} AnyKernel3/ \;
+
+          mkdir -p AnyKernel3/dtbs
+          find kernel/out/arch/arm64/boot/dts/ \
+            -name "*.dtb" -exec cp {} AnyKernel3/dtbs/ \;
+
           cd AnyKernel3
           zip -r9 ../kernel-xpeng-droidspaces.zip * -x '*.git*'
 
