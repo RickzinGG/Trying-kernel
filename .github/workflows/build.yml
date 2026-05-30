@@ -94,25 +94,28 @@ jobs:
             https://github.com/osm0sis/AnyKernel3 AnyKernel3
 
           cat > AnyKernel3/anykernel.sh << 'EOF'
-          properties() { '
-          kernel.string=Kernel xpeng Droidspaces
-          do.devicecheck=0
-          do.modules=0
-          do.systemless=1
-          do.cleanup=1
-          do.cleanuponabort=0
-          '; }
+# AnyKernel3 Ramdisk Mod Script
+properties() { '
+kernel.string=Kernel xpeng Droidspaces
+do.devicecheck=0
+do.modules=0
+do.systemless=1
+do.cleanup=1
+do.cleanuponabort=0
+device.name1=xpeng
+'; }
 
-          block=/dev/block/bootdevice/by-name/boot
-          is_slot_device=1
-          ramdisk_compression=auto
-          patch_vbmeta_flag=auto
+block=/dev/block/bootdevice/by-name/boot
+is_slot_device=1
+ramdisk_compression=auto
+patch_vbmeta_flag=auto
 
-          . tools/ak3-core.sh
-          . split_img
-          . repack_ramdisk
-          flash_boot
-          EOF
+. tools/ak3-core.sh
+
+dump_boot
+
+write_boot
+EOF
 
           find kernel/out/arch/arm64/boot/ \
             -name "Image*" -exec cp {} AnyKernel3/ \;
