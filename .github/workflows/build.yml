@@ -67,7 +67,8 @@ jobs:
           export CLANG_TRIPLE=aarch64-linux-gnu-
 
           rm -rf out
-          make ARCH=arm64 mrproper
+          git clean -fdx
+          git reset --hard
 
           make O=out ARCH=arm64 CC=clang \
             CLANG_TRIPLE=$CLANG_TRIPLE \
