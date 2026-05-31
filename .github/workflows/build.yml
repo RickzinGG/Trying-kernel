@@ -37,16 +37,6 @@ jobs:
             drivers/hwtracing/coresight/coresight-byte-cntr.c
           echo "✅ Patch coresight aplicado!"
 
-      - name: Encontrar config do msm_spare
-        working-directory: kernel
-        run: |
-          echo "=== Header msm_spare ==="
-          find . -name "*.h" | xargs grep -l "msm_spare_read" 2>/dev/null || echo "não encontrado"
-          echo "=== Todos arquivos .c com msm_spare ==="
-          find . -name "*.c" | xargs grep -l "msm_spare_read" 2>/dev/null || echo "não encontrado"
-          echo "=== Conteúdo do header se existir ==="
-          find . -name "*.h" | xargs grep -A5 "msm_spare_read" 2>/dev/null || echo "nada"
-
       - name: Compilar
         working-directory: kernel
         run: |
@@ -92,6 +82,7 @@ jobs:
             'CONFIG_COMMON_CLK_QCOM=y' \
             'CONFIG_QCOM_QTEE_SHMBRIDGE=y' \
             'CONFIG_QCOM_SCM=y' \
+            'CONFIG_PINCTRL_MSM=y' \
             > arch/arm64/configs/droidspaces.config
 
           make O=out ARCH=arm64 CC=clang \
@@ -136,3 +127,27 @@ jobs:
             '' \
             'block=/dev/block/bootdevice/by-name/boot' \
             'is_slot_device=1' \
+            'ramdisk_compression=auto' \
+            'patch_vbmeta_flag=auto' \
+            '' \
+            '. tools/ak3-core.sh' \
+            '' \
+            'dump_boot' \
+            '' \
+            'write_boot' \
+            > AnyKernel3/anykernel.sh
+
+          find kernel/out/arch/arm64/boot/ \
+            -name "Image*" -exec cp {} AnyKernel3/ \;
+
+          cd AnyKernel3
+          zip -r9 ../kernel-xpeng-droidspaces.zip * -x '*.git*'
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-xpeng-droidspaces
+          path: |
+            kernel-xpeng-droidspaces.zip
+            build.log
+          retention-days: 7
