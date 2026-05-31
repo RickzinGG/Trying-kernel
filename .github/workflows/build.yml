@@ -22,13 +22,18 @@ jobs:
           sudo apt-get install -y bc bison build-essential flex \
             libelf-dev libncurses5-dev libssl-dev python3 \
             python-is-python3 zip gcc-aarch64-linux-gnu \
-            gcc-arm-linux-gnueabi
+            gcc-arm-linux-gnueabi clang-11 lld-11 llvm-11
 
-      - name: Baixar Clang
+      - name: Configurar Clang 11 (mesmo da Motorola)
         run: |
-          git clone --depth=1 \
-            https://github.com/kdrag0n/proton-clang \
-            clang
+          mkdir -p clang/bin
+          for tool in clang clang++ ld.lld llvm-ar llvm-nm \
+            llvm-objcopy llvm-objdump llvm-strip llvm-ranlib; do
+            ln -sf /usr/bin/${tool}-11 clang/bin/${tool} 2>/dev/null || true
+          done
+          ln -sf /usr/bin/clang-11 clang/bin/clang
+          clang/bin/clang --version
+          echo "✅ Clang 11 configurado!"
 
       - name: Corrigir erros de compilação
         working-directory: kernel
@@ -40,16 +45,6 @@ jobs:
           git add -A
           git commit -m "build: fix compilation errors"
           echo "✅ Patch aplicado e commitado!"
-
-      - name: Verificar versão limpa
-        working-directory: kernel
-        run: |
-          echo "=== Versão do kernel ==="
-          make kernelversion
-          echo "=== Status git ==="
-          git status --short
-          echo "=== Último commit ==="
-          git log --oneline -1
 
       - name: Compilar
         working-directory: kernel
