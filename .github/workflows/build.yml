@@ -89,6 +89,9 @@ jobs:
             'CONFIG_PSTORE_RAM=y' \
             'CONFIG_PSTORE_RAM_ANNOTATION_APPEND=y' \
             'CONFIG_QTI_QMI_SENSOR=n' \
+            'CONFIG_QTI_QMI_COOLING_DEVICE=n' \
+            'CONFIG_QTI_QMI_CDEV=n' \
+            'CONFIG_QMI_COOLING=n' \
             > arch/arm64/configs/droidspaces.config
 
           make O=out ARCH=arm64 CC=clang \
