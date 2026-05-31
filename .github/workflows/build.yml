@@ -35,7 +35,11 @@ jobs:
         run: |
           sed -i 's/usb_qdss_alloc_req(ch, USB_BUF_NUM)/usb_qdss_alloc_req(ch, USB_BUF_NUM, 0)/' \
             drivers/hwtracing/coresight/coresight-byte-cntr.c
-          echo "✅ Patch coresight aplicado!"
+          git config user.email "build@github.com"
+          git config user.name "Builder"
+          git add -A
+          git commit -m "build: fix compilation errors"
+          echo "✅ Patch aplicado e commitado!"
 
       - name: Compilar
         working-directory: kernel
