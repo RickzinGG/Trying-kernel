@@ -37,16 +37,6 @@ jobs:
             drivers/hwtracing/coresight/coresight-byte-cntr.c
           echo "✅ Patch coresight aplicado!"
 
-      - name: Encontrar config do qmi thermal sensor
-        working-directory: kernel
-        run: |
-          echo "=== Arquivo do driver ==="
-          grep -r "qmi_sens" drivers/ --include="*.c" -l 2>/dev/null
-          echo "=== Config relacionado ==="
-          grep -r "qmi_sens" drivers/ --include="Makefile" 2>/dev/null
-          echo "=== Kconfig ==="
-          grep -r "qmi_sens\|qmi-therm\|QMI_SENSOR\|QMI_THERM" drivers/ --include="Kconfig" 2>/dev/null
-
       - name: Compilar
         working-directory: kernel
         run: |
@@ -98,6 +88,7 @@ jobs:
             'CONFIG_PSTORE_CONSOLE=y' \
             'CONFIG_PSTORE_RAM=y' \
             'CONFIG_PSTORE_RAM_ANNOTATION_APPEND=y' \
+            'CONFIG_QTI_QMI_SENSOR=n' \
             > arch/arm64/configs/droidspaces.config
 
           make O=out ARCH=arm64 CC=clang \
