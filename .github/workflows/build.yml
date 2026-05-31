@@ -41,6 +41,16 @@ jobs:
           git commit -m "build: fix compilation errors"
           echo "✅ Patch aplicado e commitado!"
 
+      - name: Verificar versão limpa
+        working-directory: kernel
+        run: |
+          echo "=== Versão do kernel ==="
+          make kernelversion
+          echo "=== Status git ==="
+          git status --short
+          echo "=== Último commit ==="
+          git log --oneline -1
+
       - name: Compilar
         working-directory: kernel
         run: |
