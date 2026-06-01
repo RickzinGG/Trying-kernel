@@ -21,15 +21,17 @@ jobs:
           sudo apt-get install -y bc bison build-essential flex \
             libelf-dev libncurses5-dev libssl-dev python3 \
             python-is-python3 zip gcc-aarch64-linux-gnu \
-            gcc-arm-linux-gnueabi clang-11 lld-11 llvm-11
+            gcc-arm-linux-gnueabi
 
-      - name: Configurar Clang 11
+      - name: Baixar Clang AOSP r383902b1 (exato da Motorola)
         run: |
-          mkdir -p clang/bin
-          for tool in clang clang++ ld.lld llvm-ar llvm-nm \
-            llvm-objcopy llvm-objdump llvm-strip llvm-ranlib; do
-            ln -sf /usr/bin/${tool}-11 clang/bin/${tool} 2>/dev/null || true
-          done
+          wget -q \
+            "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r383902b1.tar.gz" \
+            -O clang.tar.gz
+          mkdir -p clang
+          tar -xf clang.tar.gz -C clang
+          clang/bin/clang --version
+          echo "✅ Clang AOSP r383902b1 configurado!"
 
       - name: Corrigir erros de compilação
         working-directory: kernel
@@ -88,11 +90,9 @@ jobs:
             'CONFIG_QCOM_SCM=y' \
             'CONFIG_PINCTRL_MSM=y' \
             'CONFIG_QCOM_COMMAND_DB=y' \
-            'CONFIG_MSM_PIL=y' \
             'CONFIG_PSTORE=y' \
             'CONFIG_PSTORE_CONSOLE=y' \
             'CONFIG_PSTORE_RAM=y' \
-            'CONFIG_PSTORE_RAM_ANNOTATION_APPEND=y' \
             'CONFIG_QTI_QMI_SENSOR=n' \
             'CONFIG_QTI_QMI_COOLING_DEVICE=n' \
             'CONFIG_QTI_QMI_CDEV=n' \
