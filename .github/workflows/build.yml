@@ -25,11 +25,17 @@ jobs:
 
       - name: Baixar Clang AOSP r383902b1 (exato da Motorola)
         run: |
-          wget -q \
-            "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r383902b1.tar.gz" \
-            -O clang.tar.gz
-          mkdir -p clang
-          tar -xf clang.tar.gz -C clang
+          git clone \
+            --depth=1 \
+            --filter=blob:none \
+            --sparse \
+            https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 \
+            aosp-clang
+          cd aosp-clang
+          git sparse-checkout set clang-r383902b1
+          mv clang-r383902b1 ../clang
+          cd ..
+          rm -rf aosp-clang
           clang/bin/clang --version
           echo "✅ Clang AOSP r383902b1 configurado!"
 
