@@ -26,10 +26,10 @@ jobs:
       - name: Baixar Clang AOSP r383902b1
         run: |
           git clone --depth=1 \
-            https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r383902b1 \
+            https://gitlab.com/ThankYouMario/android_prebuilts_clang-standalone_11 \
             clang
           clang/bin/clang --version
-          echo "✅ Clang r383902b1 configurado!"
+          echo "✅ Clang 11 configurado!"
 
       - name: Corrigir erros de compilação
         working-directory: kernel
