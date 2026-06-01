@@ -21,15 +21,17 @@ jobs:
           sudo apt-get install -y bc bison build-essential flex \
             libelf-dev libncurses5-dev libssl-dev python3 \
             python-is-python3 zip gcc-aarch64-linux-gnu \
-            gcc-arm-linux-gnueabi
+            gcc-arm-linux-gnueabi xz-utils
 
-      - name: Baixar Clang AOSP r383902b1
+      - name: Baixar Clang 11 (LLVM oficial)
         run: |
-          git clone --depth=1 \
-            https://gitlab.com/ThankYouMario/android_prebuilts_clang-standalone_11 \
-            clang
+          wget -q \
+            https://github.com/llvm/llvm-project/releases/download/llvmorg-11.0.0/clang+llvm-11.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz \
+            -O clang.tar.xz
+          tar -xf clang.tar.xz
+          mv clang+llvm-11.0.0-x86_64-linux-gnu-ubuntu-20.04 clang
           clang/bin/clang --version
-          echo "✅ Clang 11 configurado!"
+          echo "✅ Clang 11.0.0 configurado!"
 
       - name: Corrigir erros de compilação
         working-directory: kernel
