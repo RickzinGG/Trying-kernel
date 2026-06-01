@@ -25,20 +25,11 @@ jobs:
 
       - name: Baixar Clang AOSP r383902b1
         run: |
-          git clone \
-            --depth=1 \
-            --filter=blob:none \
-            --sparse \
-            https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 \
-            aosp-clang
-          cd aosp-clang
-          git sparse-checkout init --cone
-          git sparse-checkout set clang-r383902b1
-          mv clang-r383902b1 ../clang
-          cd ..
-          rm -rf aosp-clang
+          git clone --depth=1 \
+            https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r383902b1 \
+            clang
           clang/bin/clang --version
-          echo "✅ Clang AOSP r383902b1 configurado!"
+          echo "✅ Clang r383902b1 configurado!"
 
       - name: Corrigir erros de compilação
         working-directory: kernel
